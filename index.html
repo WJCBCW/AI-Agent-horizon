@@ -6,355 +6,319 @@
     <title>AI Agent 星际航线 (2023-2025)</title>
     <style>
         :root {
-            /* 霓虹配色定义 */
-            --openai-color: #00ffa3;
-            --openai-glow: rgba(0, 255, 163, 0.6);
-            
-            --anthropic-color: #ff9e64;
-            --anthropic-glow: rgba(255, 158, 100, 0.6);
-            
-            --google-color: #4cabff;
-            --google-glow: rgba(76, 171, 255, 0.6);
-            
-            --bytedance-color: #bd93f9;
-            --bytedance-glow: rgba(189, 147, 249, 0.6);
+            /* 分类霓虹配色 */
+            --col-model: #ff2a6d;
+            --col-product: #05d9e8;
+            --col-eng: #d1f7ff;
+            --col-builder: #00ff9d;
+            --col-opensource: #ffbf00;
 
-            --bg-dark: #0a0b1e;
-            --glass-bg: rgba(255, 255, 255, 0.03);
-            --glass-border: rgba(255, 255, 255, 0.1);
+            /* 基础环境色 */
+            --bg-dark: #050510;
+            --glass-bg: rgba(20, 20, 35, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --text-main: #ffffff;
-            --text-muted: #a0a0b0;
+            --text-muted: #8b9bb4;
             
-            --track-height: 160px;
-            --timeline-width: 3200px;
+            /* 调整高度以适配更多屏幕 */
+            --track-height: 155px; 
+            --timeline-width: 3400px;
         }
 
         body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
             background-color: var(--bg-dark);
             margin: 0;
             padding: 20px;
             color: var(--text-main);
-            overflow-x: hidden;
-            min-height: 100vh;
+            overflow: hidden; /* 防止 body 双重滚动 */
+            height: 100vh;
+            box-sizing: border-box;
         }
 
-        /* --- 动态星空与极光背景 --- */
+        /* --- 动态深空背景 --- */
         .background-fx {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
             background: 
-                radial-gradient(circle at 15% 50%, rgba(76, 29, 149, 0.4), transparent 50%),
-                radial-gradient(circle at 85% 30%, rgba(6, 78, 59, 0.4), transparent 50%),
+                radial-gradient(circle at 10% 20%, rgba(255, 42, 109, 0.15), transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(5, 217, 232, 0.15), transparent 40%),
+                linear-gradient(to bottom, #020205, #0a0a12);
+        }
+        .stars {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background-image: 
                 radial-gradient(white 1px, transparent 1px),
                 radial-gradient(white 1px, transparent 1px);
-            background-size: 100% 100%, 100% 100%, 550px 550px, 350px 350px;
-            background-position: 0 0, 0 0, 0 0, 0 0;
-            animation: aurora 20s ease infinite alternate;
+            background-size: 50px 50px, 100px 100px;
+            background-position: 0 0, 25px 25px;
+            opacity: 0.3;
         }
 
-        @keyframes aurora {
-            0% { background-position: 0% 0%, 0% 0%, 0 0, 0 0; }
-            100% { background-position: 10% 10%, -10% -10%, 60px 60px, -30px 30px; }
-        }
-
-        /* 滚动条美化 */
+        /* 滚动条样式优化 */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+        ::-webkit-scrollbar-corner { background: transparent; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        ::-webkit-scrollbar-thumb { 
+            background: rgba(255,255,255,0.2); 
+            border-radius: 4px; 
+            border: 2px solid transparent; 
+            background-clip: content-box; 
+        }
+        ::-webkit-scrollbar-thumb:hover { background-color: rgba(255,255,255,0.4); }
 
-        /* 顶部控制栏 */
+        /* --- 顶部控制栏 --- */
         .header {
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            background: rgba(10, 11, 30, 0.85);
-            backdrop-filter: blur(12px);
+            position: fixed; top: 0; left: 0; right: 0;
+            background: rgba(5, 5, 16, 0.95);
+            backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
-            padding: 15px 30px;
+            padding: 10px 30px;
             z-index: 1000;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            height: 80px; /* 固定头部高度 */
+        }
+
+        .header-top {
+            display: flex; justify-content: space-between; align-items: center;
         }
 
         .header h1 { 
-            margin: 0; 
-            font-size: 1.4rem; 
-            font-weight: 300;
-            letter-spacing: 1px;
-            background: linear-gradient(90deg, #fff, #a0a0b0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            margin: 0; font-size: 1.4rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            background: linear-gradient(90deg, #fff, #8b9bb4); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-        
-        .filters { display: flex; gap: 20px; align-items: center; }
+
+        .legend-bar {
+            display: flex; gap: 20px; font-size: 0.8rem; color: var(--text-muted); align-items: center;
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 8px currentColor; }
+
+        .controls-row { display: flex; gap: 15px; align-items: center; }
         
         select { 
-            padding: 8px 15px; 
-            border-radius: 20px; 
+            padding: 4px 10px; border-radius: 4px; 
             border: 1px solid var(--glass-border);
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            font-size: 0.9rem; 
-            outline: none;
-            cursor: pointer;
-            transition: all 0.3s;
+            background: rgba(255,255,255,0.05); color: #fff; font-size: 0.85rem; outline: none; cursor: pointer;
         }
-        select:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
-        select option { background: #1a1b2e; color: #fff; }
+        select option { background: #0a0a12; }
 
-        /* 年份切换按钮组 */
-        .year-toggles {
-            display: flex;
-            gap: 5px;
-            background: rgba(0,0,0,0.2);
-            padding: 4px;
-            border-radius: 24px;
-            border: 1px solid var(--glass-border);
-        }
-
+        .year-toggles { display: flex; gap: 4px; background: rgba(255,255,255,0.05); padding: 3px; border-radius: 4px; }
         .year-btn {
-            background: transparent;
-            border: 1px solid transparent;
-            color: var(--text-muted);
-            padding: 5px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-            font-family: monospace;
+            background: transparent; border: none; color: #666; padding: 4px 12px; border-radius: 3px;
+            cursor: pointer; font-size: 0.85rem; font-weight: bold; transition: all 0.2s; font-family: monospace;
         }
+        .year-btn.active { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.1); }
 
-        .year-btn:hover { color: #fff; background: rgba(255,255,255,0.05); }
-
-        .year-btn.active {
-            background: rgba(255,255,255,0.15);
-            color: #fff;
-            border-color: rgba(255,255,255,0.3);
-            box-shadow: 0 0 10px rgba(255,255,255,0.1);
-            font-weight: bold;
-        }
-
-        /* 主容器 */
+        /* --- 主视图区域 --- */
         .main-wrapper {
-            margin-top: 90px;
+            margin-top: 110px; /* 留出 Header 空间 */
             position: relative;
             display: flex;
-            height: calc(100vh - 120px);
+            height: calc(100vh - 140px); 
             border: 1px solid var(--glass-border);
-            background: var(--glass-bg);
-            backdrop-filter: blur(5px);
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+            background: rgba(10, 10, 20, 0.6);
+            border-radius: 8px;
+            overflow-y: auto; /* 允许垂直滚动 */
+            overflow-x: hidden;
         }
 
-        /* 左侧公司表头 */
+        /* 左侧公司栏 */
         .sidebar {
-            width: 150px;
-            flex-shrink: 0;
-            background: rgba(10, 11, 30, 0.4);
+            width: 140px; flex-shrink: 0;
+            background: rgba(5, 5, 10, 0.8);
             border-right: 1px solid var(--glass-border);
-            z-index: 20;
-            position: relative;
+            z-index: 20; position: relative;
+            height: fit-content; 
+            min-height: 100%;
         }
 
         .company-label {
             height: var(--track-height);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
             border-bottom: 1px solid var(--glass-border);
-            flex-direction: column;
-            text-shadow: 0 0 10px rgba(0,0,0,0.8);
             position: relative;
-            overflow: hidden;
+            font-family: 'Segoe UI', sans-serif;
+            letter-spacing: 1px;
+            box-sizing: border-box;
         }
         
-        .company-label::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-            box-shadow: 0 0 15px currentColor;
+        .company-label strong { font-size: 1.1rem; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.2); }
+        .company-label small { font-size: 0.7rem; color: #555; margin-top: 4px; text-transform: uppercase; }
+
+        /* 右侧时间轴 */
+        .timeline-scroll-area { 
+            overflow-x: auto; 
+            overflow-y: hidden; 
+            flex-grow: 1; 
+            position: relative; 
         }
         
-        .company-label small { 
-            font-weight: normal; color: var(--text-muted); 
-            font-size: 0.75em; margin-top: 5px; letter-spacing: 0.5px;
+        .timeline-content { 
+            height: fit-content; 
+            min-height: 100%;
+            position: relative; 
+            transition: width 0.3s ease; 
         }
 
-        /* 右侧时间轴滚动区域 */
-        .timeline-scroll-area {
-            overflow-x: auto;
-            overflow-y: hidden;
-            flex-grow: 1;
-            position: relative;
+        /* 网格系统 */
+        .grid-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        .grid-line { position: absolute; top: 0; bottom: 0; border-left: 1px solid rgba(255,255,255,0.03); }
+        .grid-year { border-left: 1px solid rgba(255,255,255,0.15); }
+        .grid-label { 
+            position: absolute; top: 5px; font-size: 0.75rem; color: #444; padding-left: 6px; font-family: monospace; 
         }
-
-        .timeline-content {
-            /* 宽度将由 JS 动态计算 */
-            height: 100%;
-            position: relative;
-            transition: width 0.5s ease;
-        }
-
-        /* 网格线 */
-        .grid-lines {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-        }
-
-        .grid-line {
-            position: absolute; top: 0; bottom: 0;
-            border-left: 1px dashed rgba(255, 255, 255, 0.08);
-        }
-        
-        .grid-year {
-            border-left: 1px solid rgba(255, 255, 255, 0.3);
-            background: linear-gradient(90deg, rgba(255,255,255,0.02), transparent 20%);
-        }
-
-        .grid-label {
-            position: absolute; top: 0;
-            font-size: 0.75rem; color: var(--text-muted);
-            padding-left: 8px; padding-top: 8px;
-            font-family: monospace;
-        }
-        
-        .grid-year .grid-label {
-            color: #fff; font-size: 0.9rem; text-shadow: 0 0 5px #fff;
-        }
+        .grid-year .grid-label { color: #fff; font-size: 1rem; opacity: 0.5; font-weight: bold; top: 10px; }
 
         /* 轨道 */
         .track {
             height: var(--track-height);
             border-bottom: 1px solid var(--glass-border);
             position: relative;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.01) 50%, transparent 100%);
+            background-size: 200px 100%;
             box-sizing: border-box;
         }
 
-        /* 事件节点 */
-        .event-node {
+        /* --- 事件节点 --- */
+        .event-group {
             position: absolute;
-            width: 14px; height: 14px;
-            border-radius: 50%;
-            background: #fff;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 10;
+            transition: all 0.3s ease;
         }
 
-        .event-node::after {
-            content: ''; position: absolute;
-            top: -4px; left: -4px; right: -4px; bottom: -4px;
-            border-radius: 50%; border: 2px solid currentColor;
-            opacity: 0.6; animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.3); opacity: 0.1; }
-            100% { transform: scale(1); opacity: 0.6; }
-        }
-
-        .event-node:hover {
-            transform: scale(1.5); z-index: 100;
-            box-shadow: 0 0 20px currentColor;
-        }
-
-        .event-title {
-            position: absolute; top: -28px; left: 50%; transform: translateX(-50%);
-            white-space: nowrap; font-size: 0.7rem;
-            color: rgba(255,255,255,0.9);
-            background: rgba(0, 0, 0, 0.6);
-            padding: 3px 8px; border-radius: 12px;
-            pointer-events: none;
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(4px);
-            transition: all 0.2s;
+        .node-point {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: #fff; 
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.8);
         }
         
-        .event-node:hover .event-title { background: #fff; color: #000; font-weight: bold; }
+        .node-point::after {
+            content: ''; position: absolute;
+            top: -6px; left: -6px; right: -6px; bottom: -6px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            opacity: 0.6;
+            transition: transform 0.3s;
+        }
 
-        /* 颜色定义 */
-        .bg-OpenAI { background-color: #fff; color: var(--openai-color); box-shadow: 0 0 10px var(--openai-glow); }
-        .bg-Anthropic { background-color: #fff; color: var(--anthropic-color); box-shadow: 0 0 10px var(--anthropic-glow); }
-        .bg-Google { background-color: #fff; color: var(--google-color); box-shadow: 0 0 10px var(--google-glow); }
-        .bg-ByteDance { background-color: #fff; color: var(--bytedance-color); box-shadow: 0 0 10px var(--bytedance-glow); }
+        .node-label {
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: #aaa;
+            background: rgba(0,0,0,0.8);
+            padding: 2px 6px;
+            border-radius: 4px;
+            white-space: nowrap;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.2s;
+            max-width: 140px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            text-align: center;
+        }
 
-        .label-OpenAI::before { background-color: var(--openai-color); box-shadow: 0 0 10px var(--openai-color); }
-        .label-Anthropic::before { background-color: var(--anthropic-color); box-shadow: 0 0 10px var(--anthropic-color); }
-        .label-Google::before { background-color: var(--google-color); box-shadow: 0 0 10px var(--google-color); }
-        .label-ByteDance::before { background-color: var(--bytedance-color); box-shadow: 0 0 10px var(--bytedance-color); }
+        .event-group:hover { z-index: 100; transform: translateY(-50%) scale(1.1); }
+        .event-group:hover .node-point { box-shadow: 0 0 15px currentColor; }
+        .event-group:hover .node-point::after { transform: scale(1.5); opacity: 0.2; }
+        .event-group:hover .node-label { color: #fff; border-color: currentColor; background: #000; }
 
-        /* 详情弹窗 */
+        /* 分类颜色应用 */
+        .cat-Model .node-point { background: var(--col-model); color: var(--col-model); }
+        .cat-Model .node-label { border-left: 2px solid var(--col-model); }
+        
+        .cat-Product .node-point { background: var(--col-product); color: var(--col-product); }
+        .cat-Product .node-label { border-left: 2px solid var(--col-product); }
+        
+        .cat-Engineering .node-point { background: var(--col-eng); color: var(--col-eng); }
+        .cat-Engineering .node-label { border-left: 2px solid var(--col-eng); }
+        
+        .cat-Builder .node-point { background: var(--col-builder); color: var(--col-builder); }
+        .cat-Builder .node-label { border-left: 2px solid var(--col-builder); }
+        
+        .cat-OpenSource .node-point { background: var(--col-opensource); color: var(--col-opensource); }
+        .cat-OpenSource .node-label { border-left: 2px solid var(--col-opensource); }
+
+        /* --- 详情弹窗 (Tooltip) --- */
         .tooltip {
-            position: fixed; display: none; width: 340px;
-            background: rgba(16, 18, 39, 0.95);
-            border: 1px solid rgba(255,255,255,0.15);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.6), inset 0 0 20px rgba(255,255,255,0.02);
+            position: fixed; display: none; width: 320px;
+            background: rgba(15, 15, 25, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
             backdrop-filter: blur(15px);
-            border-radius: 12px; padding: 20px;
+            border-radius: 8px; padding: 16px;
             z-index: 9999; pointer-events: auto;
             color: #fff;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            transition: opacity 0.2s;
         }
         
-        .tooltip::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.8), transparent);
-        }
-
-        .tooltip h3 { margin: 0 0 10px 0; font-size: 1.1rem; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3); }
+        .tooltip h3 { margin: 0 0 8px 0; font-size: 1.1rem; color: #fff; }
         .tooltip .meta { 
-            font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; 
-            display: flex; gap: 10px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 8px;
+            font-size: 0.75rem; color: #666; margin-bottom: 12px; 
+            display: flex; gap: 8px; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;
         }
-        .tooltip .badge { 
-            padding: 2px 8px; border-radius: 4px; color: #fff; font-size: 0.7rem; font-weight: bold;
-            text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        .tooltip p { font-size: 0.9rem; line-height: 1.6; color: #dcdce6; margin: 0; }
-        .tooltip .source { margin-top: 15px; font-size: 0.75rem; color: #888; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; }
-        .tooltip .source a { color: #4cabff; text-decoration: none; transition: color 0.2s; }
-        .tooltip .source a:hover { color: #fff; text-shadow: 0 0 8px #4cabff; }
+        .tooltip .badge { padding: 2px 6px; border-radius: 2px; color: #000; font-weight: bold; font-size: 0.7rem; }
+        
+        .tooltip p { font-size: 0.85rem; line-height: 1.5; color: #ccc; margin: 0; }
+        .tooltip .source { margin-top: 12px; font-size: 0.7rem; color: #555; text-align: right; }
+        .tooltip .source a { color: #666; text-decoration: none; border-bottom: 1px dotted #666; }
+        .tooltip .source a:hover { color: #fff; border-color: #fff; }
 
-        .tag-Model { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .tag-Engineering { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
-        .tag-Product { background: linear-gradient(135deg, #f39c12, #d35400); }
-        .tag-Builder { background: linear-gradient(135deg, #2ecc71, #27ae60); }
-        .tag-OpenSource { background: linear-gradient(135deg, #34495e, #2c3e50); }
+        .tooltip.t-Model { border-top: 3px solid var(--col-model); }
+        .tooltip.t-Product { border-top: 3px solid var(--col-product); }
+        .tooltip.t-Engineering { border-top: 3px solid var(--col-eng); }
+        .tooltip.t-Builder { border-top: 3px solid var(--col-builder); }
+        .tooltip.t-OpenSource { border-top: 3px solid var(--col-opensource); }
+
+        .tooltip.t-Model .badge { background: var(--col-model); }
+        .tooltip.t-Product .badge { background: var(--col-product); }
+        .tooltip.t-Engineering .badge { background: var(--col-eng); }
+        .tooltip.t-Builder .badge { background: var(--col-builder); }
+        .tooltip.t-OpenSource .badge { background: var(--col-opensource); }
 
     </style>
 </head>
 <body>
 
 <div class="background-fx"></div>
+<div class="stars"></div>
 
 <div class="header">
-    <div>
-        <h1>AI AGENT HORIZON <span style="font-size:0.6em; opacity:0.6; vertical-align:middle; margin-left:10px;">2023 - 2025</span></h1>
-    </div>
-    <div class="filters">
-        <select id="filterCategory">
-            <option value="all">:: ALL CATEGORIES ::</option>
-            <option value="Model">Model (模型)</option>
-            <option value="Engineering">Engineering (工程)</option>
-            <option value="Product">Product (产品)</option>
-            <option value="Builder">Builder (平台)</option>
-            <option value="OpenSource">Open Source (开源)</option>
-        </select>
-        
-        <!-- 年份多选开关 -->
-        <div class="year-toggles" id="yearToggles">
-            <button class="year-btn active" data-year="2023">2023</button>
-            <button class="year-btn active" data-year="2024">2024</button>
-            <button class="year-btn active" data-year="2025">2025</button>
+    <div class="header-top">
+        <h1>AI Agent Horizon</h1>
+        <div class="controls-row">
+            <div class="year-toggles" id="yearToggles">
+                <button class="year-btn active" data-year="2023">2023</button>
+                <button class="year-btn active" data-year="2024">2024</button>
+                <button class="year-btn active" data-year="2025">2025</button>
+            </div>
+            <select id="filterCategory">
+                <option value="all">所有分类</option>
+                <option value="Model">Model</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Product">Product</option>
+                <option value="Builder">Builder</option>
+                <option value="OpenSource">OpenSource</option>
+            </select>
         </div>
+    </div>
+    
+    <div class="legend-bar">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-model); color:var(--col-model); box-shadow:0 0 5px currentColor"></div> Model</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-product); color:var(--col-product); box-shadow:0 0 5px currentColor"></div> Product</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-eng); color:var(--col-eng); box-shadow:0 0 5px currentColor"></div> Engineering</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-builder); color:var(--col-builder); box-shadow:0 0 5px currentColor"></div> Builder</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--col-opensource); color:var(--col-opensource); box-shadow:0 0 5px currentColor"></div> OpenSource</div>
     </div>
 </div>
 
@@ -362,10 +326,10 @@
     <!-- 左侧栏 -->
     <div class="sidebar">
         <div style="height: 30px;"></div>
-        <div class="company-label label-OpenAI">OpenAI<small>Model & Ecosystem</small></div>
-        <div class="company-label label-Anthropic">Anthropic<small>Safety & Capabilities</small></div>
-        <div class="company-label label-Google">Google<small>DeepMind & Cloud</small></div>
-        <div class="company-label label-ByteDance">ByteDance<small>Application & Tools</small></div>
+        <div class="company-label"><strong>OpenAI</strong><small>Model & Ecosystem</small></div>
+        <div class="company-label"><strong>Anthropic</strong><small>Safety & Capabilities</small></div>
+        <div class="company-label"><strong>Google</strong><small>DeepMind & Cloud</small></div>
+        <div class="company-label"><strong>ByteDance</strong><small>Application & Tools</small></div>
     </div>
 
     <!-- 右侧时间轴 -->
@@ -381,90 +345,86 @@
     </div>
 </div>
 
-<!-- 悬浮窗 -->
 <div id="tooltip" class="tooltip"></div>
 
 <script>
     // === 数据集 ===
     const companies = ['OpenAI', 'Anthropic', 'Google', 'ByteDance'];
     const rawData = [
-        // --- OpenAI ---
-        { date: "2023-03-14", company: "OpenAI", category: "Model", title: "GPT-4", desc: "发布 GPT-4，具备更强大的推理能力和多模态（视觉输入）基础。同时推出了 System Card 详细阐述安全性。", source: "https://openai.com/research/gpt-4" },
-        { date: "2023-06-13", company: "OpenAI", category: "Engineering", title: "Function Calling", desc: "API 引入函数调用，允许模型输出结构化 JSON 调用外部工具，Agent 开发核心能力。", source: "https://openai.com/blog/function-calling-and-other-api-updates" },
-        { date: "2023-11-06", company: "OpenAI", category: "Product", title: "GPTs & Assistants", desc: "推出 GPTs（无需代码构建 Agent）和 Assistants API（包含 Code Interpreter 等的开发框架）。", source: "https://openai.com/blog/introducing-gpts" },
-        { date: "2024-02-15", company: "OpenAI", category: "Model", title: "Sora", desc: "发布文生视频模型 Sora (Research Preview)，展示了极高的一致性和物理模拟能力。", source: "https://openai.com/sora" },
-        { date: "2024-05-13", company: "OpenAI", category: "Model", title: "GPT-4o", desc: "Omni 模型，原生支持音频、视觉、文本实时端到端推理，显著提升多模态体验。", source: "https://openai.com/index/hello-gpt-4o/" },
-        { date: "2024-09-12", company: "OpenAI", category: "Model", title: "OpenAI o1", desc: "发布 o1-preview (Strawberry)，通过思维链（CoT）强化科学、编程和数学推理能力。", source: "https://openai.com/index/learning-to-reason-with-llms/" },
-        { date: "2024-10-11", company: "OpenAI", category: "OpenSource", title: "Swarm", desc: "开源实验性多 Agent 编排框架，主打轻量级，提出 Handoffs 和 Routines 概念。", source: "https://github.com/openai/swarm" },
-        { date: "2025-01-23", company: "OpenAI", category: "Product", title: "Operator", desc: "正式发布 Operator（代号），OpenAI 首个能自主操作浏览器的 Agent (CUA)。", source: "https://openai.com/index/introducing-operator" },
-        { date: "2025-02-03", company: "OpenAI", category: "Product", title: "Deep Research", desc: "基于 o3 模型，能自主进行 30 分钟深度调研并生成报告，准确率大幅超越 GPT-4o。", source: "https://openai.com/index/introducing-deep-research/" },
-        { date: "2025-02-27", company: "OpenAI", category: "Engineering", title: "Apps SDK", desc: "发布官方 iOS/Android/Web 原生开发套件，封装了 Realtime API 的复杂连接与音频流处理，让开发者能快速集成高级语音模式体验。", source: "https://openai.com/index/openai-apps-sdk" },
-        { date: "2025-06-03", company: "OpenAI", category: "Builder", title: "Agents SDK", desc: "推出代码优先的 Agent 开发框架，内置规划循环与记忆管理。标志着从服务端 Assistants API 向灵活的客户端/双向控制转变。", source: "https://platform.openai.com/docs/agents-sdk" },
-        { date: "2025-07-17", company: "OpenAI", category: "Product", title: "ChatGPT Agent", desc: "【正式发布】OpenAI 正式推出 'ChatGPT Agent'，允许 Plus/Pro 用户委托 AI 接管浏览器执行跨网页复杂任务，整合了 Operator 能力。", source: "https://chatgpt.com/zh-Hans-CN/features/agent/" },
-        { date: "2025-08-07", company: "OpenAI", category: "Model", title: "GPT-5 (Orion)", desc: "新一代旗舰模型，全面整合 o 系列推理能力，作为所有 Agent 产品的核心基座。", source: "https://openai.com/gpt-5" },
-        { date: "2025-10-06", company: "OpenAI", category: "Builder", title: "AgentKit", desc: "完整的 Agent 开发工具包，包含可视化构建器、连接器注册表和 ChatKit。", source: "https://openai.com/index/introducing-agentkit" },
-        { date: "2025-11-12", company: "OpenAI", category: "Model", title: "GPT-5.1 & Codex Max", desc: "专为长周期编程任务设计的模型，提升复杂工程任务中的执行能力。", source: "https://openai.com/news/product/gpt-5-1" },
+        // OpenAI
+        { date: "2023-03-14", company: "OpenAI", category: "Model", title: "GPT-4", desc: "发布 GPT-4，具备更强大的推理能力和多模态（视觉输入）基础。", source: "https://openai.com/research/gpt-4" },
+        { date: "2023-06-13", company: "OpenAI", category: "Engineering", title: "Function Calling", desc: "API 引入函数调用，允许模型输出结构化 JSON 调用外部工具。", source: "https://openai.com/blog/function-calling-and-other-api-updates" },
+        { date: "2023-11-06", company: "OpenAI", category: "Product", title: "GPTs & Assistants", desc: "推出无需代码构建 Agent 的 GPTs 和 Assistants API。", source: "https://openai.com/blog/introducing-gpts" },
+        { date: "2024-02-15", company: "OpenAI", category: "Model", title: "Sora", desc: "发布文生视频模型 Sora (Research Preview)。", source: "https://openai.com/sora" },
+        { date: "2024-05-13", company: "OpenAI", category: "Model", title: "GPT-4o", desc: "Omni 模型，支持实时音频、视觉、文本端到端推理。", source: "https://openai.com/index/hello-gpt-4o/" },
+        { date: "2024-09-12", company: "OpenAI", category: "Model", title: "OpenAI o1", desc: "发布 o1-preview，通过思维链强化推理能力。", source: "https://openai.com/index/learning-to-reason-with-llms/" },
+        { date: "2024-10-11", company: "OpenAI", category: "OpenSource", title: "Swarm", desc: "开源实验性多 Agent 编排框架。", source: "https://github.com/openai/swarm" },
+        { date: "2025-01-23", company: "OpenAI", category: "Product", title: "Operator", desc: "OpenAI 首个自主浏览器操作 Agent (CUA)。", source: "https://openai.com/index/introducing-operator" },
+        { date: "2025-02-03", company: "OpenAI", category: "Product", title: "Deep Research", desc: "基于 o3 模型，能自主进行深度调研并生成报告。", source: "https://openai.com/index/introducing-deep-research/" },
+        { date: "2025-02-27", company: "OpenAI", category: "Engineering", title: "Apps SDK", desc: "官方原生开发套件，封装 Realtime API。", source: "https://openai.com/index/openai-apps-sdk" },
+        { date: "2025-06-03", company: "OpenAI", category: "Builder", title: "Agents SDK", desc: "代码优先的 Agent 开发框架，内置规划循环。", source: "https://platform.openai.com/docs/agents-sdk" },
+        { date: "2025-07-17", company: "OpenAI", category: "Product", title: "ChatGPT Agent", desc: "正式在 ChatGPT 中推出 Agent 功能，接管浏览器任务。", source: "https://chatgpt.com/zh-Hans-CN/features/agent/" },
+        { date: "2025-08-07", company: "OpenAI", category: "Model", title: "GPT-5 (Orion)", desc: "新一代旗舰模型，全面整合 o 系列推理能力。", source: "https://openai.com/gpt-5" },
+        { date: "2025-10-06", company: "OpenAI", category: "Builder", title: "AgentKit", desc: "完整的 Agent 开发工具包与可视化构建器。", source: "https://openai.com/index/introducing-agentkit" },
+        { date: "2025-11-12", company: "OpenAI", category: "Model", title: "GPT-5.1 & Codex Max", desc: "专为长周期编程任务优化的模型。", source: "https://openai.com/news/product/gpt-5-1" },
 
-        // --- Anthropic ---
-        { date: "2023-03-14", company: "Anthropic", category: "Model", title: "Claude 1", desc: "首款公开大模型，主打有用性、诚实性和无害性（HHH）。", source: "https://www.anthropic.com/news/introducing-claude" },
-        { date: "2023-05-11", company: "Anthropic", category: "Engineering", title: "100k Context", desc: "上下文窗口扩展至 100k token，支持长文档和书籍分析。", source: "https://www.anthropic.com/news/100k-context-windows" },
-        { date: "2023-07-11", company: "Anthropic", category: "Model", title: "Claude 2", desc: "性能提升，推出 claude.ai 网页版支持文件分析。", source: "https://www.anthropic.com/news/claude-2" },
-        { date: "2023-09-07", company: "Anthropic", category: "Product", title: "Claude Pro", desc: "面向个人用户的付费订阅服务。", source: "https://www.anthropic.com/news/claude-pro" },
-        { date: "2023-11-21", company: "Anthropic", category: "Model", title: "Claude 2.1", desc: "200k 上下文，降低幻觉，引入 System Prompts 和 Tool Use Beta。", source: "https://www.anthropic.com/news/claude-2-1" },
-        { date: "2024-03-04", company: "Anthropic", category: "Model", title: "Claude 3 Family", desc: "Haiku, Sonnet, Opus 发布。Opus 在多项基准超越 GPT-4。", source: "https://www.anthropic.com/news/claude-3-family" },
-        { date: "2024-04-04", company: "Anthropic", category: "Engineering", title: "Tool Use (GA)", desc: "工具使用功能正式上线，Agent 连接外部数据的基石。", source: "https://www.anthropic.com/news/tool-use-ga" },
-        { date: "2024-05-01", company: "Anthropic", category: "Product", title: "Claude Team/App", desc: "企业团队版计划及 iOS 应用发布。", source: "https://www.anthropic.com/news/team-plan-and-ios" },
-        { date: "2024-06-20", company: "Anthropic", category: "Model", title: "Claude 3.5 Sonnet", desc: "编码推理能力跃升。同日推出 'Artifacts' 交互界面，支持实时预览。", source: "https://www.anthropic.com/news/claude-3-5-sonnet" },
-        { date: "2024-09-04", company: "Anthropic", category: "Product", title: "Claude Enterprise", desc: "企业版发布，GitHub 集成与企业级安全控制。", source: "https://www.anthropic.com/news/claude-enterprise" },
-        { date: "2024-10-22", company: "Anthropic", category: "Engineering", title: "Computer Use", desc: "Claude 3.5 新能力，允许模型像人一样操作屏幕 GUI (Beta)。", source: "https://www.anthropic.com/news/3-5-models-and-computer-use" },
-        { date: "2024-11-25", company: "Anthropic", category: "Engineering", title: "MCP Protocol", desc: "开源 Model Context Protocol，统一 AI 连接数据源的标准协议。", source: "https://www.anthropic.com/news/model-context-protocol" },
-        { date: "2025-02-24", company: "Anthropic", category: "Builder", title: "Claude Code", desc: "基于命令行的 Agent 工具，支持直接在终端委托复杂编码任务。同发 Claude 3.7。", source: "https://www.anthropic.com/news/claude-3-7-sonnet" },
-        { date: "2025-05-22", company: "Anthropic", category: "Model", title: "Claude 4 Family", desc: "正式发布 Claude 4。引入扩展思维能力。Claude Code 正式版 (GA)。", source: "https://www.anthropic.com/news/introducing-claude-4" },
-        { date: "2025-07-15", company: "Anthropic", category: "Product", title: "Claude Finance", desc: "金融行业专版，集成实时市场数据和审计追踪。", source: "https://www.anthropic.com/news/claude-financial-services" },
-        
-        // [NEW ITEM] Claude for Chrome
-        { date: "2025-08-12", company: "Anthropic", category: "Product", title: "Claude for Chrome", desc: "正式发布官方浏览器扩展。深度集成了 Computer Use 能力，允许 Claude 直接读取 DOM、截图并操作网页元素，是用户在不离开浏览器的情况下运行轻量级 Web Agent 的官方入口。", source: "https://www.anthropic.com/news/claude-for-chrome" },
-        
-        { date: "2025-09-29", company: "Anthropic", category: "Model", title: "Sonnet 4.5", desc: "提升长周期任务稳定性，被称为最适合 Agent 的模型。", source: "https://www.anthropic.com/news/claude-sonnet-4-5" },
-        { date: "2025-10-20", company: "Anthropic", category: "Builder", title: "Code on Web", desc: "Claude Code 扩展至 Web 端，支持云端并行运行多个编码 Agent。", source: "https://www.anthropic.com/blog/claude-code-on-the-web" },
-        { date: "2025-11-24", company: "Anthropic", category: "Model", title: "Opus 4.5", desc: "旗舰模型更新，全面集成升级版 Computer Use 能力。", source: "https://www.anthropic.com/news/claude-opus-4-5" },
+        // Anthropic
+        { date: "2023-03-14", company: "Anthropic", category: "Model", title: "Claude 1", desc: "首款公开大模型，主打无害性。", source: "https://www.anthropic.com/" },
+        { date: "2023-05-11", company: "Anthropic", category: "Engineering", title: "100k Context", desc: "上下文窗口扩展至 100k token。", source: "https://www.anthropic.com/news/100k-context-windows" },
+        { date: "2023-07-11", company: "Anthropic", category: "Model", title: "Claude 2", desc: "性能提升，推出 claude.ai 网页版。", source: "https://www.anthropic.com/news/claude-2" },
+        { date: "2023-09-07", company: "Anthropic", category: "Product", title: "Claude Pro", desc: "付费订阅服务。", source: "https://www.anthropic.com/news/claude-pro" },
+        { date: "2023-11-21", company: "Anthropic", category: "Model", title: "Claude 2.1", desc: "200k 上下文，降低幻觉。", source: "https://www.anthropic.com/news/claude-2-1" },
+        { date: "2024-03-04", company: "Anthropic", category: "Model", title: "Claude 3 Family", desc: "Haiku, Sonnet, Opus 发布。", source: "https://www.anthropic.com/news/claude-3-family" },
+        { date: "2024-04-04", company: "Anthropic", category: "Engineering", title: "Tool Use (GA)", desc: "工具使用功能正式上线。", source: "https://www.anthropic.com/news/tool-use-ga" },
+        { date: "2024-05-01", company: "Anthropic", category: "Product", title: "Claude Team/App", desc: "企业团队版及 iOS 应用。", source: "https://www.anthropic.com/news/team-plan-and-ios" },
+        { date: "2024-06-20", company: "Anthropic", category: "Model", title: "Claude 3.5 Sonnet", desc: "编码推理能力跃升，推出 Artifacts。", source: "https://www.anthropic.com/news/claude-3-5-sonnet" },
+        { date: "2024-09-04", company: "Anthropic", category: "Product", title: "Claude Enterprise", desc: "企业版发布，集成 GitHub。", source: "https://www.anthropic.com/news/claude-enterprise" },
+        { date: "2024-10-22", company: "Anthropic", category: "Engineering", title: "Computer Use", desc: "Claude 3.5 获得操作屏幕 GUI 的能力。", source: "https://www.anthropic.com/news/3-5-models-and-computer-use" },
+        { date: "2024-11-25", company: "Anthropic", category: "Engineering", title: "MCP Protocol", desc: "开源 Model Context Protocol。", source: "https://www.anthropic.com/news/model-context-protocol" },
+        { date: "2025-02-24", company: "Anthropic", category: "Builder", title: "Claude Code", desc: "基于命令行的 Agent 编码工具。", source: "https://www.anthropic.com/news/claude-3-7-sonnet" },
+        // [NEW] Claude Research
+        { date: "2025-04-15", company: "Anthropic", category: "Product", title: "Claude Research", desc: "推出深度研究能力，能够自主执行多步网络搜索、分析复杂资料并生成长篇综合报告，进一步增强了 Claude 在科研与分析场景的表现。", source: "https://www.anthropic.com/news/claude-research" },
+        { date: "2025-05-22", company: "Anthropic", category: "Model", title: "Claude 4 Family", desc: "正式发布 Claude 4，引入扩展思维。", source: "https://www.anthropic.com/news/introducing-claude-4" },
+        { date: "2025-07-15", company: "Anthropic", category: "Product", title: "Claude Finance", desc: "金融行业专版解决方案。", source: "https://www.anthropic.com/news/claude-financial-services" },
+        { date: "2025-08-12", company: "Anthropic", category: "Product", title: "Claude for Chrome", desc: "官方浏览器扩展，集成 Web 端 Computer Use。", source: "https://www.anthropic.com/news/claude-for-chrome" },
+        { date: "2025-09-29", company: "Anthropic", category: "Model", title: "Sonnet 4.5", desc: "提升长周期任务稳定性。", source: "https://www.anthropic.com/news/claude-sonnet-4-5" },
+        { date: "2025-10-20", company: "Anthropic", category: "Builder", title: "Code on Web", desc: "Claude Code 扩展至 Web 端。", source: "https://www.anthropic.com/blog/claude-code-on-the-web" },
+        { date: "2025-11-24", company: "Anthropic", category: "Model", title: "Opus 4.5", desc: "旗舰模型更新。", source: "https://www.anthropic.com/news/claude-opus-4-5" },
 
-        // --- Google ---
-        { date: "2023-03-21", company: "Google", category: "Product", title: "Bard (Exp)", desc: "开放 Bard 访问权限，Google 的首个对话式 AI 产品。", source: "https://blog.google/technology/ai/try-bard/" },
-        { date: "2023-05-10", company: "Google", category: "Model", title: "PaLM 2 & Duet AI", desc: "具备更强推理的基础模型，以及集成在 Workspace 中的 Duet AI。", source: "https://blog.google/technology/ai/google-palm-2-ai-large-language-model/" },
-        { date: "2023-12-06", company: "Google", category: "Model", title: "Gemini 1.0", desc: "原生多模态大模型 (Ultra/Pro/Nano)。Ultra 首次在测评中超越人类专家。", source: "https://blog.google/technology/ai/google-gemini-ai/" },
-        { date: "2024-02-15", company: "Google", category: "Model", title: "Gemini 1.5 Pro", desc: "采用 MoE 架构，首创 1M+ Token 超长上下文窗口。", source: "https://blog.google/technology/ai/google-gemini-next-generation-model-february-2024/" },
-        { date: "2024-02-21", company: "Google", category: "OpenSource", title: "Gemma", desc: "轻量级开放模型系列 (2B/7B)，基于 Gemini 同源技术。", source: "https://blog.google/technology/developers/gemma-open-models/" },
-        { date: "2024-04-09", company: "Google", category: "Builder", title: "Vertex AI Agent", desc: "低代码 Agent 构建平台，整合搜索与对话能力。", source: "https://cloud.google.com/blog/products/ai-machine-learning/vertex-ai-agent-builder" },
-        { date: "2024-05-14", company: "Google", category: "Product", title: "Project Astra", desc: "通用 AI 代理雏形，实时多模态交互。同发 Gemini 1.5 Flash。", source: "https://blog.google/technology/ai/google-gemini-update-flash-ai-assistant-io-2024/" },
-        { date: "2024-05-14", company: "Google", category: "OpenSource", title: "Firebase Genkit", desc: "帮助开发者构建生产级 Agent 的开源框架。", source: "https://firebase.google.com/docs/genkit" },
-        { date: "2024-12-11", company: "Google", category: "Model", title: "Gemini 2.0", desc: "专为 Agentic Workflow 设计，支持实时语音打断和视觉理解。", source: "https://blog.google/technology/ai/introducing-gemini-2-0/" },
-        { date: "2025-01-28", company: "Google", category: "Product", title: "Project Jarvis", desc: "基于 Gemini 2.0 的 Chrome 浏览器自动化 Agent (预览版)。", source: "https://blog.google/products/chrome/project-jarvis-ai-agent/" },
-        { date: "2025-03-10", company: "Google", category: "Builder", title: "Google Agent SDK", desc: "统一 Android、Web 和 Cloud 的通用 Agent 开发标准。", source: "https://developers.google.com/ai/agent-sdk" },
-        { date: "2025-05-14", company: "Google", category: "Engineering", title: "A2A Protocol", desc: "Google I/O 2025 发布。开源 Agent-to-Agent 交互协议，定义了不同架构 Agent 间的发现、握手与协作机制，是实现动态多智能体互联网的基础设施（不同于 MCP 的数据连接）。", source: "https://developers.google.com/ai/a2a" },
-        { date: "2025-05-14", company: "Google", category: "Model", title: "Gemini 2.5", desc: "提升长逻辑链推理。Android 底层集成 Universal Controller。", source: "https://blog.google/technology/ai/google-io-2025-gemini-android/" },
-        { date: "2025-10-22", company: "Google", category: "Model", title: "Gemini 3.0 (Preview)", desc: "在具身智能和复杂科研推理上取得突破。", source: "https://blog.google/technology/ai/gemini-3-preview/" },
+        // Google
+        { date: "2023-03-21", company: "Google", category: "Product", title: "Bard (Exp)", desc: "Google 首个对话式 AI 产品。", source: "https://blog.google/technology/ai/try-bard/" },
+        { date: "2023-05-10", company: "Google", category: "Model", title: "PaLM 2", desc: "驱动 Duet AI 的基础模型。", source: "https://blog.google/" },
+        { date: "2023-12-06", company: "Google", category: "Model", title: "Gemini 1.0", desc: "原生多模态大模型。", source: "https://blog.google/technology/ai/google-gemini-ai/" },
+        { date: "2024-02-15", company: "Google", category: "Model", title: "Gemini 1.5 Pro", desc: "首创 1M+ Token 上下文窗口。", source: "https://blog.google/" },
+        { date: "2024-02-21", company: "Google", category: "OpenSource", title: "Gemma", desc: "轻量级开放模型系列。", source: "https://blog.google/" },
+        { date: "2024-04-09", company: "Google", category: "Builder", title: "Vertex AI Agent", desc: "低代码 Agent 构建平台。", source: "https://cloud.google.com/" },
+        { date: "2024-05-14", company: "Google", category: "Product", title: "Project Astra", desc: "实时多模态交互 Agent 雏形。", source: "https://blog.google/" },
+        { date: "2024-05-14", company: "Google", category: "OpenSource", title: "Firebase Genkit", desc: "生产级 Agent 开源框架。", source: "https://firebase.google.com/" },
+        { date: "2024-12-11", company: "Google", category: "Model", title: "Gemini 2.0", desc: "专为 Agentic Workflow 设计。", source: "https://blog.google/" },
+        { date: "2025-01-28", company: "Google", category: "Product", title: "Project Jarvis", desc: "Chrome 浏览器自动化 Agent。", source: "https://blog.google/" },
+        { date: "2025-03-10", company: "Google", category: "Builder", title: "Google Agent SDK", desc: "统一 Android/Web/Cloud 的开发标准。", source: "https://developers.google.com/" },
+        { date: "2025-05-14", company: "Google", category: "Engineering", title: "A2A Protocol", desc: "开源 Agent-to-Agent 交互协议。", source: "https://developers.google.com/ai/a2a" },
+        { date: "2025-05-14", company: "Google", category: "Model", title: "Gemini 2.5", desc: "提升长逻辑链推理。", source: "https://blog.google/" },
+        { date: "2025-10-22", company: "Google", category: "Model", title: "Gemini 3.0", desc: "具身智能与科研推理突破。", source: "https://blog.google/" },
 
-        // --- ByteDance ---
-        { date: "2023-08-17", company: "ByteDance", category: "Product", title: "云雀 & 豆包 APP", desc: "云雀大模型上线，同日发布基于该模型的 C 端对话产品'豆包'。", source: "https://www.doubao.com/" },
-        { date: "2023-12-20", company: "ByteDance", category: "Builder", title: "Coze (Intl)", desc: "海外版 Coze 上线，支持插件调用的 AI Bot 开发平台。", source: "https://www.coze.com/" },
-        { date: "2024-02-01", company: "ByteDance", category: "Builder", title: "Coze CN (扣子)", desc: "国内版上线，深度集成飞书/微信，主打 Workflow 编排。", source: "https://www.coze.cn/blog" },
-        { date: "2024-05-15", company: "ByteDance", category: "Model", title: "豆包大模型", desc: "豆包大模型家族正式转正发布，主打极致性价比。", source: "https://www.volcengine.com/product/doubao" },
-        { date: "2024-05-28", company: "ByteDance", category: "Product", title: "即梦 AI", desc: "一站式 AI 创作平台（原 Dreamina），支持文生图/视频。", source: "https://jimeng.jianying.com/" },
-        { date: "2024-07-05", company: "ByteDance", category: "Model", title: "Seed-TTS", desc: "达到人类表现水平的语音大模型，支持超自然语音合成。", source: "https://www.volcengine.com/product/voice-tech" },
-        { date: "2024-09-24", company: "ByteDance", category: "Model", title: "PixelDance/Seaweed", desc: "发布两款视频生成模型，集成进即梦 AI。", source: "https://www.volcengine.com/news/article/20240924" },
-        { date: "2024-10-10", company: "ByteDance", category: "Product", title: "Ola Friend", desc: "AI 智能耳机，深度集成豆包大模型，实现全天候语音伴侣。", source: "https://www.doubao.com/" },
-        { date: "2025-01-08", company: "ByteDance", category: "Product", title: "Trae IDE", desc: "智能 AI IDE，内置 Claude 3.5 和豆包模型，对标 Cursor。", source: "https://www.trae.ai/" },
-        { date: "2025-05-15", company: "ByteDance", category: "Model", title: "Doubao 1.5 Pro", desc: "支持 1M token，针对 Agent 工具调用进行专项优化。", source: "https://www.volcengine.com/" },
-        { date: "2025-08-20", company: "ByteDance", category: "Builder", title: "Coze Engine 2.0", desc: "原生支持多智能体协作（Multi-Agent Collaboration）。", source: "https://www.coze.cn/blog" }
+        // ByteDance
+        { date: "2023-08-17", company: "ByteDance", category: "Product", title: "豆包 APP", desc: "云雀大模型与 C 端产品上线。", source: "https://www.doubao.com/" },
+        { date: "2023-12-20", company: "ByteDance", category: "Builder", title: "Coze (Intl)", desc: "海外版 Bot 开发平台。", source: "https://www.coze.com/" },
+        { date: "2024-02-01", company: "ByteDance", category: "Builder", title: "Coze CN", desc: "国内版上线，深度集成飞书/微信。", source: "https://www.coze.cn/" },
+        { date: "2024-05-15", company: "ByteDance", category: "Model", title: "豆包大模型", desc: "大模型家族正式发布，主打性价比。", source: "https://www.volcengine.com/" },
+        { date: "2024-05-28", company: "ByteDance", category: "Product", title: "即梦 AI", desc: "一站式 AI 创作平台。", source: "https://jimeng.jianying.com/" },
+        { date: "2024-07-05", company: "ByteDance", category: "Model", title: "Seed-TTS", desc: "超自然语音合成模型。", source: "https://www.volcengine.com/" },
+        { date: "2024-09-24", company: "ByteDance", category: "Model", title: "PixelDance", desc: "视频生成模型。", source: "https://www.volcengine.com/" },
+        { date: "2024-10-10", company: "ByteDance", category: "Product", title: "Ola Friend", desc: "AI 智能耳机。", source: "https://www.doubao.com/" },
+        { date: "2025-01-08", company: "ByteDance", category: "Product", title: "Trae IDE", desc: "智能 AI IDE。", source: "https://www.trae.ai/" },
+        { date: "2025-05-15", company: "ByteDance", category: "Model", title: "Doubao 1.5 Pro", desc: "支持 1M token，优化 Agent 工具调用。", source: "https://www.volcengine.com/" },
+        { date: "2025-08-20", company: "ByteDance", category: "Builder", title: "Coze Engine 2.0", desc: "支持多智能体协作。", source: "https://www.coze.cn/" }
     ];
 
-    // === 核心逻辑 ===
-    
+    // === 逻辑实现：年份管理 ===
     let activeYears = [2023, 2024, 2025];
 
-    const yearBtns = document.querySelectorAll('.year-btn');
-    yearBtns.forEach(btn => {
+    document.querySelectorAll('.year-btn').forEach(btn => {
         btn.addEventListener('click', () => {
             const y = parseInt(btn.getAttribute('data-year'));
             if (activeYears.includes(y)) {
@@ -477,66 +437,54 @@
                 btn.classList.add('active');
             }
             activeYears.sort((a,b) => a - b);
-            
             createGrid();
             renderEvents();
         });
     });
 
+    // 计算位置 (包含未选年份隐藏逻辑)
     function getPositionPercent(dateString) {
         const d = new Date(dateString);
         const y = d.getFullYear();
-        
         if (!activeYears.includes(y)) return -1;
         
         const prevYearsCount = activeYears.filter(year => year < y).length;
-        
         const startOfYear = new Date(y, 0, 1);
         const endOfYear = new Date(y, 11, 31);
         const yearProgress = (d - startOfYear) / (endOfYear - startOfYear);
-        
-        const totalSlots = activeYears.length;
-        
-        return ((prevYearsCount + yearProgress) / totalSlots) * 100;
+        return ((prevYearsCount + yearProgress) / activeYears.length) * 100;
     }
 
+    // 绘制网格
     function createGrid() {
-        const gridContainer = document.getElementById('gridContainer');
-        const contentWidth = activeYears.length * 1100;
-        
+        const container = document.getElementById('gridContainer');
+        const contentWidth = activeYears.length * 1100; // 每宽
         document.getElementById('timelineContent').style.width = `${contentWidth}px`;
-        gridContainer.innerHTML = '';
+        container.innerHTML = '';
         
         activeYears.forEach((year, index) => {
+            // 年份分割线
             const yearLine = document.createElement('div');
             yearLine.className = 'grid-line grid-year';
-            const leftPct = (index / activeYears.length) * 100;
-            yearLine.style.left = `${leftPct}%`;
-            
-            const label = document.createElement('div');
-            label.className = 'grid-label';
-            label.innerHTML = `<strong>${year}</strong>`;
-            yearLine.appendChild(label);
-            gridContainer.appendChild(yearLine);
+            yearLine.style.left = `${(index / activeYears.length) * 100}%`;
+            yearLine.innerHTML = `<div class="grid-label">${year}</div>`;
+            container.appendChild(yearLine);
 
+            // 月份线
             for (let m = 1; m < 12; m++) {
                 if (m % 3 === 0) {
                     const line = document.createElement('div');
                     line.className = 'grid-line';
-                    const monthProgress = m / 12;
-                    const totalPct = ((index + monthProgress) / activeYears.length) * 100;
-                    line.style.left = `${totalPct}%`;
-                    
-                    const mLabel = document.createElement('div');
-                    mLabel.className = 'grid-label';
-                    mLabel.innerText = `${m + 1}月`;
-                    line.appendChild(mLabel);
-                    gridContainer.appendChild(line);
+                    const pct = ((index + m/12) / activeYears.length) * 100;
+                    line.style.left = `${pct}%`;
+                    line.innerHTML = `<div class="grid-label">${m+1}月</div>`;
+                    container.appendChild(line);
                 }
             }
         });
     }
 
+    // 渲染事件 (含智能防重叠)
     function renderEvents() {
         const filterCat = document.getElementById('filterCategory').value;
 
@@ -544,117 +492,94 @@
             const track = document.getElementById(`track-${company}`);
             track.innerHTML = ''; 
 
-            const companyEvents = rawData.filter(e => {
-                const eYear = parseInt(e.date.split('-')[0]);
+            const events = rawData.filter(e => {
+                const y = parseInt(e.date.split('-')[0]);
                 return e.company === company 
                     && (filterCat === 'all' || e.category === filterCat)
-                    && activeYears.includes(eYear);
+                    && activeYears.includes(y);
             });
 
-            companyEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-            const placedNodes = [];
+            events.sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            // 智能防重叠布局算法
+            let lanes = [-10, -10, -10]; 
+            const itemWidthPercent = 3.5; 
 
-            companyEvents.forEach(evt => {
+            events.forEach(evt => {
                 const leftPct = getPositionPercent(evt.date);
-                
-                let overlapCount = 0;
-                let topOffset = 0;
-                
-                const nearby = placedNodes.filter(p => Math.abs(p.left - leftPct) < 1.0); 
-                overlapCount = nearby.length;
+                if(leftPct < 0) return;
 
-                if (overlapCount > 0) {
-                     const sign = overlapCount % 2 === 0 ? -1 : 1;
-                     const multiplier = Math.ceil(overlapCount / 2);
-                     topOffset = sign * multiplier * 24; 
+                let bestLane = 0;
+                // 优先选择能放得下且最靠上的泳道
+                if (leftPct > lanes[0] + 0.5) bestLane = 0;
+                else if (leftPct > lanes[1] + 0.5) bestLane = 1;
+                else if (leftPct > lanes[2] + 0.5) bestLane = 2;
+                else {
+                    bestLane = (lanes.findIndex(v => v === Math.min(...lanes))); 
                 }
 
-                placedNodes.push({ left: leftPct });
-
-                const node = document.createElement('div');
-                node.className = `event-node bg-${company}`;
-                node.style.left = `${leftPct}%`;
-                node.style.top = `calc(50% + ${topOffset}px)`;
+                lanes[bestLane] = leftPct + itemWidthPercent;
                 
-                const title = document.createElement('div');
-                title.className = 'event-title';
-                title.innerText = evt.title;
-                node.appendChild(title);
+                const yOffsets = [-50, 0, 50];
+                const topOffset = yOffsets[bestLane];
 
-                node.addEventListener('mouseenter', (e) => showTooltip(e, evt));
-                node.addEventListener('mouseleave', hideTooltipWithDelay);
+                const el = document.createElement('div');
+                el.className = `event-group cat-${evt.category}`;
+                el.style.left = `${leftPct}%`;
+                el.style.top = `calc(50% + ${topOffset}px)`;
+                
+                el.innerHTML = `
+                    <div class="node-point"></div>
+                    <div class="node-label">${evt.title}</div>
+                `;
 
-                track.appendChild(node);
+                el.addEventListener('mouseenter', (e) => showTooltip(e, evt));
+                el.addEventListener('mouseleave', hideTooltipWithDelay);
+                
+                track.appendChild(el);
             });
         });
     }
 
-    // === Tooltip 逻辑 ===
+    // === Tooltip ===
     const tooltip = document.getElementById('tooltip');
-    let hideTimer = null; 
+    let hideTimer = null;
 
     function showTooltip(e, data) {
-        if (hideTimer) {
-            clearTimeout(hideTimer);
-            hideTimer = null;
-        }
-
-        const rect = e.target.getBoundingClientRect();
-        let tagClass = `tag-${data.category}`;
-
+        if (hideTimer) clearTimeout(hideTimer);
+        
+        tooltip.className = `tooltip t-${data.category}`;
         tooltip.innerHTML = `
             <h3>${data.title}</h3>
             <div class="meta">
-                <span class="badge ${tagClass}">${data.category}</span>
+                <span class="badge">${data.category}</span>
                 <span>${data.date}</span>
             </div>
             <p>${data.desc}</p>
-            <div class="source">来源: <a href="${data.source}" target="_blank" rel="noopener noreferrer">${data.source}</a></div>
+            <div class="source"><a href="${data.source}" target="_blank">来源链接 &rarr;</a></div>
         `;
-        
+
         tooltip.style.display = 'block';
         
-        let left = rect.left + window.scrollX + 15;
-        let top = rect.top + window.scrollY + 15;
-
-        if (left + 340 > window.innerWidth + window.scrollX) {
-            left = rect.left + window.scrollX - 350;
-        }
-        if (top + 200 > window.innerHeight + window.scrollY) {
-            top = rect.top + window.scrollY - 180;
-        }
+        const rect = e.currentTarget.getBoundingClientRect();
+        let left = rect.left + 20;
+        let top = rect.top + 20;
         
-        tooltip.style.left = `${left}px`;
-        tooltip.style.top = `${top}px`;
+        if (left + 340 > window.innerWidth) left = rect.left - 340;
+        if (top + 200 > window.innerHeight) top = rect.top - 180;
         
-        let glowColor = '#fff';
-        if(data.company === 'OpenAI') glowColor = 'var(--openai-color)';
-        if(data.company === 'Anthropic') glowColor = 'var(--anthropic-color)';
-        if(data.company === 'Google') glowColor = 'var(--google-color)';
-        if(data.company === 'ByteDance') glowColor = 'var(--bytedance-color)';
-        
-        tooltip.style.borderColor = glowColor;
-        tooltip.style.boxShadow = `0 10px 40px rgba(0,0,0,0.8), 0 0 10px ${glowColor}`;
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
     }
 
     function hideTooltipWithDelay() {
-        hideTimer = setTimeout(() => {
-            tooltip.style.display = 'none';
-        }, 300);
+        hideTimer = setTimeout(() => { tooltip.style.display = 'none'; }, 300);
     }
 
-    tooltip.addEventListener('mouseenter', () => {
-        if (hideTimer) {
-            clearTimeout(hideTimer);
-            hideTimer = null;
-        }
-    });
+    tooltip.addEventListener('mouseenter', () => clearTimeout(hideTimer));
+    tooltip.addEventListener('mouseleave', hideTooltipWithDelay);
 
-    tooltip.addEventListener('mouseleave', () => {
-        hideTooltipWithDelay();
-    });
-
-    // === 初始化 ===
+    // 初始化
     window.onload = () => {
         createGrid();
         renderEvents();
@@ -662,6 +587,5 @@
     };
 
 </script>
-
 </body>
 </html>
